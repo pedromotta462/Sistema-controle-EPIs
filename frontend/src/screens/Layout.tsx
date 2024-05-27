@@ -203,7 +203,7 @@ import {
           <MenuItem
             onClick={() => {
               handleClose;
-              history("/app/login");
+              history("/");
             }}
           >
             Logout
