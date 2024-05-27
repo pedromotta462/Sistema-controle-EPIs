@@ -1,4 +1,4 @@
-import { Close, Add, Search } from "@mui/icons-material";
+import { Search } from "@mui/icons-material";
 import {
   Button,
   Stack,
