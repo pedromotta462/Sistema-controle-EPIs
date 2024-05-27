@@ -92,7 +92,7 @@ function Login() {
               variant={`${showLogin ? "contained" : "outlined"}`}
               onClick={(e) => {
                 e.preventDefault();
-                history("/home");
+                history("/app/home");
               }}
             >
               Entrar

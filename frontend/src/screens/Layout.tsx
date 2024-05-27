@@ -73,10 +73,10 @@ import {
               }
             >
               <ListItemButton
-                selected={selectedIndex === 0}
+                selected={selectedIndex === 1}
                 onClick={(event) => {
-                  handleListItemClick(event, 0);
-                  history("/home");
+                  handleListItemClick(event, 1);
+                  history("/app/home");
                 }}
               >
                 <Stack flexDirection={"row"} gap={2}>
@@ -85,10 +85,10 @@ import {
                 </Stack>
               </ListItemButton>
               <ListItemButton
-                selected={selectedIndex === 1}
+                selected={selectedIndex === 2}
                 onClick={(event) => {
-                  handleListItemClick(event, 1)
-                  history("/estoque");
+                  handleListItemClick(event, 2)
+                  history("/app/estoque");
                 }}
               >
                 <Stack flexDirection={"row"} gap={2}>
@@ -97,10 +97,10 @@ import {
                 </Stack>
               </ListItemButton>
               <ListItemButton
-                selected={selectedIndex === 2}
+                selected={selectedIndex === 3}
                 onClick={(event) => {
-                  handleListItemClick(event, 2);
-                  history("/funcionarios");
+                  handleListItemClick(event, 3);
+                  history("/app/funcionarios");
                 }}
               >
                 <Stack flexDirection={"row"} gap={2}>
@@ -109,8 +109,8 @@ import {
                 </Stack>
               </ListItemButton>
               <ListItemButton
-                selected={selectedIndex === 3}
-                onClick={(event) => handleListItemClick(event, 3)}
+                selected={selectedIndex === 4}
+                onClick={(event) => handleListItemClick(event, 4)}
               >
                 <Stack flexDirection={"row"} gap={2}>
                   <BarChart color="primary" />
@@ -179,7 +179,7 @@ import {
               </Stack>
             </Stack>
           </div>
-          <div className="flex flex-col items-center justify-center h-full w-full bg-[#161717]">
+          <div className="flex flex-col items-center justify-center h-[90%] w-full bg-[#161717]">
             <Outlet />
           </div>
         </div>
@@ -194,7 +194,7 @@ import {
         >
           <MenuItem onClick={() => {
             handleClose;
-            history("/profile")
+            history("/app/profile")
           }}
           >
             Profile
@@ -203,7 +203,7 @@ import {
           <MenuItem
             onClick={() => {
               handleClose;
-              history("/login");
+              history("/app/login");
             }}
           >
             Logout
