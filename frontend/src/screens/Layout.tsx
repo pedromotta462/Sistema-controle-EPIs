@@ -1,14 +1,10 @@
 import {
     Avatar,
     Badge,
-    Box,
     Button,
-    Divider,
     IconButton,
     List,
     ListItemButton,
-    ListItemIcon,
-    ListItemText,
     ListSubheader,
     Menu,
     MenuItem,
@@ -20,7 +16,6 @@ import {
   import avatar from "../assets/placeholder.svg";
   import Logo from "../assets/Logo.png";
   import {
-    Drafts as DraftsIcon,
     Settings,
     Notifications,
     Mail,
@@ -45,6 +40,7 @@ import {
       index: number
     ) => {
       setSelectedIndex(index);
+      console.log(event)
     };
   
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
