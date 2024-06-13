@@ -25,7 +25,10 @@ export class NotificationService {
   }
 
   async update(id: string, data: Notificacao): Promise<Notificacao> {
-    await this.findOne(id);
+    const notification = await this.findOne(id);
+    if (!notification) {
+      throw new NotFoundException(`Notificacao with ID "${id}" not found`);
+    }
     return this.prisma.notificacao.update({
       where: { id },
       data,
@@ -34,6 +37,9 @@ export class NotificationService {
 
   async remove(id: string): Promise<Notificacao> {
     const notificacao = await this.findOne(id);
+    if (!notificacao) {
+      throw new NotFoundException(`Notificacao with ID "${id}" not found`);
+    }
     return this.prisma.notificacao.delete({ where: { id } });
   }
 }
