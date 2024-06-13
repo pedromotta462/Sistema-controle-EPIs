@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from '../controllers/app.controller';
 import { AppService } from '../services/app.service';
-import { FuncionarioModule } from './employee/employee.module';
+import { EmployeeModule } from './employee/employee.module';
 import { PrismaService } from 'src/services/prisma/prisma.service';
 import { EpiModule } from './epi/epi.module';
 import { RemovalModule } from './removal/removal.module';
@@ -11,14 +11,16 @@ import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
-    FuncionarioModule,
+    EmployeeModule,
     EpiModule,
     RemovalModule,
     DevolutionModule,
     NotificationModule,
     AdminModule,
   ],
-  controllers: [AppController],
+  controllers: [
+    AppController,
+  ],
   providers: [
     AppService,
     PrismaService,
