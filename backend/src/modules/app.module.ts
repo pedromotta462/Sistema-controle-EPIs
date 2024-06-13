@@ -6,7 +6,7 @@ import { PrismaService } from 'src/services/prisma/prisma.service';
 import { EpiModule } from './epi/epi.module';
 import { RemovalModule } from './removal/removal.module';
 import { DevolutionModule } from './devolution/devolution.module';
-
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -14,6 +14,7 @@ import { DevolutionModule } from './devolution/devolution.module';
     EpiModule,
     RemovalModule,
     DevolutionModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [
