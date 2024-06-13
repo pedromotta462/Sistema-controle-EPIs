@@ -5,6 +5,7 @@ import { FuncionarioModule } from './employee/employee.module';
 import { PrismaService } from 'src/services/prisma/prisma.service';
 import { EpiModule } from './epi/epi.module';
 import { RemovalModule } from './removal/removal.module';
+import { DevolutionModule } from './devolution/devolution.module';
 
 
 @Module({
@@ -12,6 +13,7 @@ import { RemovalModule } from './removal/removal.module';
     FuncionarioModule,
     EpiModule,
     RemovalModule,
+    DevolutionModule,
   ],
   controllers: [AppController],
   providers: [
