@@ -7,6 +7,7 @@ import { EpiModule } from './epi/epi.module';
 import { RemovalModule } from './removal/removal.module';
 import { DevolutionModule } from './devolution/devolution.module';
 import { NotificationModule } from './notification/notification.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { NotificationModule } from './notification/notification.module';
     RemovalModule,
     DevolutionModule,
     NotificationModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [
