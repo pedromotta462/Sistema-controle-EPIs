@@ -1,12 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Admin } from '@prisma/client';
+import { Admin, Prisma } from '@prisma/client';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: Admin): Promise<Admin> {
+  async create(data: Prisma.AdminCreateInput): Promise<Admin> {
+    if (!data.senha) throw new Error('Senha é obrigatório');
+
+    data.senha = await argon2.hash(data.senha);
+
     return this.prisma.admin.create({ data });
   }
 
@@ -14,30 +19,42 @@ export class AdminService {
     return this.prisma.admin.findMany();
   }
 
-  async findOne(id: string): Promise<Admin> {
-    const admin = await this.prisma.admin.findUnique({ where: { id } });
+  async findOne(
+    adminWhereUniqueInput: Prisma.AdminWhereUniqueInput,
+  ): Promise<Admin> {
+    const admin = await this.prisma.admin.findUnique({
+      where: adminWhereUniqueInput,
+    });
     if (!admin) {
-      throw new NotFoundException(`Admin with ID "${id}" not found`);
+      throw new NotFoundException(
+        `Admin with Input "${adminWhereUniqueInput}" not found`,
+      );
     }
     return admin;
   }
 
-  async update(id: string, data: Admin): Promise<Admin> {
-    const admin = await this.findOne(id);
-    if(!admin){
-        throw new NotFoundException(`Admin with ID "${id}" not found`);
+  async update(params: {
+    where: Prisma.AdminWhereUniqueInput;
+    data: Prisma.AdminUpdateInput;
+  }): Promise<Admin> {
+    const { where, data } = params;
+
+    if (data.senha) {
+      const hashedPassword = await argon2.hash(data.senha as string);
+      data.senha = { set: hashedPassword };
     }
+
     return this.prisma.admin.update({
-      where: { id },
       data,
+      where,
     });
   }
 
-  async remove(id: string): Promise<Admin> {
-    const admin = await this.findOne(id);
-    if(!admin){
-        throw new NotFoundException(`Admin with ID "${id}" not found`);
+  async remove(where: Prisma.AdminWhereUniqueInput): Promise<Admin> {
+    const admin = await this.findOne(where);
+    if (!admin) {
+      throw new NotFoundException(`Admin with Input "${where}" not found`);
     }
-    return this.prisma.admin.delete({ where: { id } });
+    return this.prisma.admin.delete({ where: where });
   }
 }

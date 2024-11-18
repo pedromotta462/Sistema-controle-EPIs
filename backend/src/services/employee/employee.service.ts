@@ -1,13 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Funcionario } from '@prisma/client';
-
+import { Funcionario, Prisma } from '@prisma/client';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class EmployeeService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: Funcionario): Promise<Funcionario> {
+  async create(data: Prisma.FuncionarioCreateInput): Promise<Funcionario> {
+    if (!data.senha) throw new Error('Senha é obrigatório');
+
+    data.senha = await argon2.hash(data.senha);
     return this.prisma.funcionario.create({ data });
   }
 
@@ -15,32 +18,36 @@ export class EmployeeService {
     return this.prisma.funcionario.findMany();
   }
 
-  async findOne(id: string): Promise<Funcionario> {
+  async findOne(
+    employeeWhereUniqueInput: Prisma.FuncionarioWhereUniqueInput,
+  ): Promise<Funcionario> {
     const funcionario = await this.prisma.funcionario.findUnique({
-      where: { id },
+      where: employeeWhereUniqueInput,
     });
     if (!funcionario) {
-      throw new NotFoundException(`Funcionario with ID "${id}" not found`);
+      throw new NotFoundException(
+        `Funcionario with Input "${employeeWhereUniqueInput}" not found`,
+      );
     }
     return funcionario;
   }
 
-  async update(id: string, data: Funcionario): Promise<Funcionario> {
-    const funcionario = await this.findOne(id);
+  async update(where: Prisma.FuncionarioWhereUniqueInput, data: Prisma.FuncionarioUpdateInput): Promise<Funcionario> {
+    const funcionario = await this.findOne(where);
     if (!funcionario) {
-        throw new NotFoundException(`Funcionario with ID ${id} not found`);
-      }
+      throw new NotFoundException(`Funcionario with Input ${where} not found`);
+    }
     return this.prisma.funcionario.update({
-      where: { id },
+      where: where,
       data,
     });
   }
 
-  async remove(id: string): Promise<Funcionario> {
-    const funcionario = await this.findOne(id);
+  async remove(where: Prisma.FuncionarioWhereUniqueInput): Promise<Funcionario> {
+    const funcionario = await this.findOne(where);
     if (!funcionario) {
-      throw new NotFoundException(`Funcionario with ID ${id} not found`);
+      throw new NotFoundException(`Funcionario with Input ${where} not found`);
     }
-    return this.prisma.funcionario.delete({ where: { id } });
+    return this.prisma.funcionario.delete({ where: where });
   }
 }
