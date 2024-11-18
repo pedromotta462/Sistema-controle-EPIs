@@ -33,7 +33,7 @@ export class AuthService {
 
     }
 
-    async signInAdmin(email: string, pass: string): Promise<{ access_token: string, admin: Admin }> {
+    async signInAdmin(email: string, pass: string): Promise<{ access_token: string, user: Admin }> {
 
         const admin = await this.adminService.findOne({ email });
 
@@ -47,7 +47,7 @@ export class AuthService {
 
         return {
             access_token: await this.jwtService.signAsync(payload),
-            admin: admin,
+            user: admin,
         };
 
     }

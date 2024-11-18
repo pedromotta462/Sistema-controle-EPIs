@@ -40,7 +40,9 @@ export class AdminController {
   }
 
   @Delete(':id')
-  remove(@Param('id') where: Prisma.AdminWhereUniqueInput) {
+  remove(@Param('id') id: string) {
+    const where: Prisma.AdminWhereUniqueInput = { id };
+    
     return this.adminService.remove(where);
   }
 }

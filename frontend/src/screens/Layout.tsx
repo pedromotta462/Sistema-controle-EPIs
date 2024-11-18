@@ -27,13 +27,20 @@ import {
     ArrowRight,
   } from "@mui/icons-material";
   import HomeIcon from "@mui/icons-material/Home";
+  import Cookies from "js-cookie";
+  import toast from "react-hot-toast";
   
   import { useNavigate, Outlet } from "react-router-dom";
+import useStore from "../hooks/useStore";
   
-  const Layout = () => {
-    const history = useNavigate();
-  
+  const Layout = () => {  
     const [selectedIndex, setSelectedIndex] = React.useState(1);
+
+    const clearUser = useStore((state: any) => state.clearUser);
+
+    const user = useStore((state: any) => state.user);
+
+    const navigate = useNavigate();
   
     const handleListItemClick = (
       event: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -45,12 +52,23 @@ import {
   
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       setAnchorEl(event.currentTarget);
     };
+
     const handleClose = () => {
       setAnchorEl(null);
     };
+
+    const logOut = () => {
+      Cookies.remove("access_token");
+      
+      clearUser();
+      
+      navigate("/");
+      toast.success("Até mais! 👋🏾👋🏾");
+    }
   
     return (
       <div className="flex items-start justify-start h-[100dvh] w-full bg-[#161717]">
@@ -72,7 +90,7 @@ import {
                 selected={selectedIndex === 1}
                 onClick={(event) => {
                   handleListItemClick(event, 1);
-                  history("/app/home");
+                  navigate("/app/home");
                 }}
               >
                 <Stack flexDirection={"row"} gap={2}>
@@ -84,7 +102,7 @@ import {
                 selected={selectedIndex === 2}
                 onClick={(event) => {
                   handleListItemClick(event, 2)
-                  history("/app/estoque");
+                  navigate("/app/estoque");
                 }}
               >
                 <Stack flexDirection={"row"} gap={2}>
@@ -96,7 +114,7 @@ import {
                 selected={selectedIndex === 3}
                 onClick={(event) => {
                   handleListItemClick(event, 3);
-                  history("/app/funcionarios");
+                  navigate("/app/funcionarios");
                 }}
               >
                 <Stack flexDirection={"row"} gap={2}>
@@ -170,8 +188,8 @@ import {
                 </Avatar>
               </IconButton>
               <Stack gap={0.5}>
-                <p className="text-white text-base">Fulano</p>
-                <p className="text-white text-xs">Fulado@fulano.com</p>
+                <p className="text-white text-base">{user.nome}</p>
+                <p className="text-white text-xs">{user.email}</p>
               </Stack>
             </Stack>
           </div>
@@ -190,7 +208,7 @@ import {
         >
           <MenuItem onClick={() => {
             handleClose;
-            history("/app/profile")
+            navigate("/app/profile")
           }}
           >
             Profile
@@ -199,7 +217,7 @@ import {
           <MenuItem
             onClick={() => {
               handleClose;
-              history("/");
+              logOut();
             }}
           >
             Logout

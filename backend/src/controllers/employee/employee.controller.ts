@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { EmployeeService } from '../../services/employee/employee.service';
-import { Funcionario } from '@prisma/client'; 
+import { Funcionario, Prisma } from '@prisma/client'; 
 
-@Controller('funcionarios')
+@Controller('employee')
 export class EmployeeController {
   constructor(private readonly funcionarioService: EmployeeService) {}
 
@@ -17,17 +17,24 @@ export class EmployeeController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.funcionarioService.findOne(id);
+  findOne(@Param('id') where: Prisma.FuncionarioWhereUniqueInput) {
+    return this.funcionarioService.findOne(where);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() data: Funcionario) {
-    return this.funcionarioService.update(id, data);
+  update(
+    @Param('id') id: string, 
+    @Body() data: Prisma.FuncionarioUpdateInput,
+  ) {
+    const where: Prisma.FuncionarioWhereUniqueInput = { id };
+
+    return this.funcionarioService.update(where, data);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.funcionarioService.remove(id);
+    const where: Prisma.FuncionarioWhereUniqueInput = { id };
+
+    return this.funcionarioService.remove(where);
   }
 }

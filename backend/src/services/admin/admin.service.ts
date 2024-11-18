@@ -27,7 +27,7 @@ export class AdminService {
     });
     if (!admin) {
       throw new NotFoundException(
-        `Admin with Input "${adminWhereUniqueInput}" not found`,
+        `Admin with Input "${JSON.stringify(adminWhereUniqueInput)}" not found`,
       );
     }
     return admin;

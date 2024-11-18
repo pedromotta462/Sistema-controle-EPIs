@@ -24,9 +24,10 @@ export class EmployeeService {
     const funcionario = await this.prisma.funcionario.findUnique({
       where: employeeWhereUniqueInput,
     });
+
     if (!funcionario) {
       throw new NotFoundException(
-        `Funcionario with Input "${employeeWhereUniqueInput}" not found`,
+        `Funcionario with Input "${JSON.stringify(employeeWhereUniqueInput)}" not found`,
       );
     }
     return funcionario;
@@ -45,6 +46,7 @@ export class EmployeeService {
 
   async remove(where: Prisma.FuncionarioWhereUniqueInput): Promise<Funcionario> {
     const funcionario = await this.findOne(where);
+    
     if (!funcionario) {
       throw new NotFoundException(`Funcionario with Input ${where} not found`);
     }

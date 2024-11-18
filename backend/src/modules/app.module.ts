@@ -8,6 +8,7 @@ import { RemovalModule } from './removal/removal.module';
 import { DevolutionModule } from './devolution/devolution.module';
 import { NotificationModule } from './notification/notification.module';
 import { AdminModule } from './admin/admin.module';
+import { AuthModule } from 'src/controllers/auth/auth.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AdminModule } from './admin/admin.module';
     DevolutionModule,
     NotificationModule,
     AdminModule,
+    AuthModule,
   ],
   controllers: [
     AppController,

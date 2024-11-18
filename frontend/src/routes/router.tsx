@@ -7,9 +7,9 @@ import {
   Layout,
   Profile,
 } from "../screens/index";
+import ProtectedRoute from "./ProtectedRoute";
 
 const Router = () => {
-
   const router = createBrowserRouter([
     {
       path: "/",
@@ -17,7 +17,11 @@ const Router = () => {
     },
     {
       path: "/app",
-      element: <Layout />,
+      element: (
+        <ProtectedRoute>
+          <Layout />
+        </ProtectedRoute>
+      ),
       children: [
         {
           path: "home",
@@ -40,7 +44,6 @@ const Router = () => {
   ]);
 
   return <RouterProvider router={router} />;
+};
 
-}
-
-export default Router
+export default Router;
