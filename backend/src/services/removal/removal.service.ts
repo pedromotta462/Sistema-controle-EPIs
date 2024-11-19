@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Retirada } from '@prisma/client';
+import { Prisma, Retirada } from '@prisma/client';
 
 @Injectable()
 export class RemovalService {
@@ -11,7 +11,16 @@ export class RemovalService {
   }
 
   async findAll(): Promise<Retirada[]> {
-    return this.prisma.retirada.findMany();
+    return this.prisma.retirada.findMany(
+      {
+        include: {
+          funcionario: true,
+          epi: true,
+          adminAprovacao: true,
+          devolucao: true,
+        },
+      }
+    );
   }
 
   async findOne(id: string): Promise<Retirada> {
@@ -22,7 +31,7 @@ export class RemovalService {
     return retirada;
   }
 
-  async update(id: string, data: Retirada): Promise<Retirada> {
+  async update(id: string, data?: Prisma.RetiradaUpdateInput): Promise<Retirada> {
     const retirada = await this.findOne(id);
     if (!retirada) {
       throw new NotFoundException(`Retirada with ID "${id}" not found`);
@@ -39,5 +48,18 @@ export class RemovalService {
       throw new NotFoundException(`Retirada with ID "${id}" not found`);
     }
     return this.prisma.retirada.delete({ where: { id } });
+  }
+
+  async approveRemoval(user: {sub: string, username: string, email: string }, id: string): Promise<Retirada> {
+    const updatedRetirada = await this.prisma.retirada.update({
+      where: { id },
+      data: {
+        adminAprovacao: {
+          connect: { id: user.sub },
+        },
+      },
+    });
+
+    return updatedRetirada;
   }
 }

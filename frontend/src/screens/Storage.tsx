@@ -1,11 +1,68 @@
-import { Add, Search } from "@mui/icons-material";
-import {
-  Button,
-  Stack,
-} from "@mui/material";
+import { Add, Remove, Search } from "@mui/icons-material";
+import { Button, Stack } from "@mui/material";
 import { grey } from "@mui/material/colors";
+import CustomModal from "../components/CustomModal";
+import RegisterEPI from "../components/RegisterEPI";
+import { useState } from "react";
+import { getAllEPIsRequest, useRemoveEPI, useRequestEPI } from "../hooks/useEPIs";
+import { useQuery } from "@tanstack/react-query";
+import { EPI } from "../helpers/types";
+import useStore from "../hooks/useStore";
+import toast from "react-hot-toast";
 
 const Storage = () => {
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
+
+  const handleClose = () => setOpen(false);
+
+  const user = useStore((state: any) => state.user);
+
+  const { data: epis, isLoading: isGettingEPIs, refetch } = useQuery({
+    queryKey: ["epis"],
+    queryFn: () => getAllEPIsRequest(),
+  });
+
+  const { mutate: removeEPI, isPending: isRemovingEPI } = useRemoveEPI({
+    onSuccess: () => {
+      refetch();
+      toast.success('EPI removido com sucesso!');
+    },
+    onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || "";
+        toast.error("Erro ao remover EPI:\n" + errorMessage);
+        console.log(error);
+    },
+  });
+
+  const { mutate: RequestEPI, isPending: isRequestingEPI } = useRequestEPI({
+    onSuccess: () => {
+      toast.success('EPI solicitado com sucesso!');
+    },
+    onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || "";
+        toast.error("Erro ao solicitar EPI:\n" + errorMessage);
+        console.log(error);
+    },
+  });
+
+  const handleRequestEPI = (id: string) => {
+    console.log("EPI ", id, " solicitado");
+    RequestEPI({
+      id: id,
+    });
+  }
+
+  const handleRemoveEPI = (id: string) => {
+    console.log("EPI ", id, " removido");
+    removeEPI({
+      id: id,
+    });
+  }
+
+
+
   return (
     <Stack
       spacing={2}
@@ -33,42 +90,92 @@ const Storage = () => {
             <Search sx={{ color: grey[500] }} />
           </button>
         </form>
-        <div>
-          <Button variant="contained">+ Novo EPI</Button>
-        </div>
+        {!user.cargo && (
+          <div>
+            <Button variant="contained" onClick={handleOpen}>
+              + Novo EPI
+            </Button>
+          </div>
+        )}
       </div>
       <div className="grid grid-cols-3 gap-10  self-center">
-        {Array.from(Array(6)).map((_, index) => (
-          <div className="w-[20rem] h-60 flex flex-col justify-between gap-2 bg-[#2B2B2B] rounded-lg shadow p-2 pt-4">
-            <div className="flex gap-2">
-              <img
-                className="bg-neutral-500 w-40 h-40 shrink-0 rounded-lg"
-                src={
-                  "https://images.tcdn.com.br/img/img_prod/1223316/luva_ldi_safetytato_ca42405_107_1_8d5670386fc7eb73fe118cc92f5e9071.jpg"
-                }
-                alt=""
-              />
-              <div className="flex flex-col" key={index}>
-                <span className="font-bold text-white-700 italic text-xl">
-                  Lorem, ipsum.
-                </span>
-                <p className="line-clamp-3 text-[#717579] text-xs m-2">CA03912</p>
-                <p className="text-[#3984F3] text-sm m-2">Estoque: 10</p>
+        {isGettingEPIs ? (
+          <p className="text-white">"Carregando epis"</p>
+        ) : (
+          epis.map((data: EPI, index: any) => (
+            <div className="w-[20rem] h-70 flex flex-col justify-between gap-2 bg-[#2B2B2B] rounded-lg shadow p-2 pt-4">
+              <div className="flex gap-2">
+                <img
+                  className="bg-neutral-500 w-40 h-40 shrink-0 rounded-lg"
+                  src={data.fotoUrl || "https://via.placeholder.com/150"}
+                  alt=""
+                />
+                <div className="flex flex-col" key={index}>
+                  <span className="font-bold text-white italic text-xl">
+                    {data.nome}
+                  </span>
+                  <p className="line-clamp-3 text-[#717579] text-xs m-2">
+                    {data.categoria}
+                  </p>
+                  <p className="line-clamp-3 text-[#717579] text-xs m-2">
+                    {data.descricao}
+                  </p>
+                  <p className="text-[#3984F3] text-sm m-2">
+                    Estoque: {data.quantidadeDisponivel}
+                  </p>
+                  <p className="text-[#3984F3] text-sm m-2">
+                    Validade:{" "}
+                    {data.dataValidade
+                      ? new Date(data.dataValidade).toLocaleDateString("pt-BR")
+                      : "N/A"}
+                  </p>
+                </div>
               </div>
+              <Stack
+                gap={1}
+                flexDirection={"row"}
+                justifyContent={"center"}
+                alignItems={"center"}
+              >
+                {user.cargo ? 
+                  <Button disabled={isRequestingEPI} variant="outlined" startIcon={<Add />} onClick={() => {handleRequestEPI(data.id)}}>
+                    Solicitar EPI
+                  </Button>
+                  :
+                  <Button disabled={isRemovingEPI} variant="outlined" startIcon={<Remove />} onClick={() => {handleRemoveEPI(data.id)}}>
+                    Remover EPI
+                  </Button>
+                }
+              </Stack>
             </div>
-            <Stack
-              gap={1}
-              flexDirection={"row"}
-              justifyContent={"center"}
-              alignItems={"center"}
-            >
-              <Button variant="outlined" startIcon={<Add />}>
-                Solicitar Reposição
-              </Button>
-            </Stack>
-          </div>
-        ))}
+          ))
+        )}
       </div>
+      <CustomModal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        sx={{
+          width: "90%",
+          height: "90%",
+          margin: "auto",
+          overflowY: "fixed",
+        }}
+        onConfirm={handleClose}
+        titleCancel="Fechar"
+        showSaveButton={false}
+      >
+        <>
+          <div className="flex w-full flex-col items-center justify-center">
+            <h2 className="text-bold text-2xl m-2">Cadastrar Novo EPI</h2>
+            <p>Preencha formulário abaixo:</p>
+            <div className="w-full m-2">
+              <RegisterEPI refetch={refetch} />
+            </div>
+          </div>
+        </>
+      </CustomModal>
     </Stack>
   );
 };

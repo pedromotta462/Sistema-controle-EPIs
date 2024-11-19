@@ -18,13 +18,12 @@ const RegisterEmployee = () => {
 
     const {mutate: signUpEmployee, isPending: isSendingSignUpEmployee} = useSignUpEmployee({
         onSuccess: () => {
-            console.log('Email enviado com sucesso!');
-            toast.success('Email enviado com sucesso!');
+            toast.success('Funcionário criado com sucesso!');
             CleanFields();
         },
         onError: (error: any) => {
             const errorMessage = error.response?.data?.message || "";
-            toast.error("Erro ao enviar email:\n" + errorMessage);
+            toast.error("Erro ao criar funcionário:\n" + errorMessage);
             console.log(error);
         },
     });
@@ -93,7 +92,7 @@ const RegisterEmployee = () => {
         />
       </div>
       <Button disabled={isSendingSignUpEmployee} type="submit" variant="contained" color='success' className="text-white font-bold py-2 px-4 rounded">
-        {isSendingSignUpEmployee ? "Enviando..." : "Enviar"}
+        {isSendingSignUpEmployee ? "Criando..." : "Criar"}
       </Button>
     </form>
   )

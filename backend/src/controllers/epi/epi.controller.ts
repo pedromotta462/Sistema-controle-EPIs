@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseGuards } from '@nestjs/common';
 import { EpiService } from '../../services/epi/epi.service';
 import { EPI } from '@prisma/client';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('epi')
 export class EpiController {
@@ -19,6 +20,24 @@ export class EpiController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.epiService.findOne(id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/request/:id')
+  requestOne(@Request() req, @Param('id') id: string) {
+    const user = req.user;
+
+    return this.epiService.requestOne(user, id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/devolution/:id')
+  devolutionOne(@Request() req, @Param('id') id: string) {
+    const user = req.user;
+
+    console.log(user);
+
+    return this.epiService.devolutionOne(user, id);
   }
 
   @Patch(':id')

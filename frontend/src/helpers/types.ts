@@ -12,8 +12,10 @@ export type Employee = {
 
 export type EPI = {
   id: string;
-  descricao: string;
-  categoria: string;
+  descricao?: string;
+  categoria?: string;
+  nome: string;
+  fotoUrl?: string;
   quantidadeDisponivel: number;
   dataValidade?: Date;
   retiradas: Retirada[];

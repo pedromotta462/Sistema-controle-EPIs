@@ -11,7 +11,19 @@ export class DevolutionService {
   }
 
   async findAll(): Promise<Devolucao[]> {
-    return this.prisma.devolucao.findMany();
+    return this.prisma.devolucao.findMany(
+      {
+        include: {
+          retirada: {
+            include: {
+              funcionario: true,
+              epi: true,
+            },
+          },
+          adminAprovacao: true,
+        },
+      }
+    );
   }
 
   async findOne(id: string): Promise<Devolucao> {
@@ -39,5 +51,18 @@ export class DevolutionService {
       throw new NotFoundException(`Devolucao with ID "${id}" not found`);
     }
     return this.prisma.devolucao.delete({ where: { id } });
+  }
+
+  async approveDevolution(user: {sub: string, username: string, email: string }, id: string): Promise<Devolucao> {
+    const updatedDevolucao = await this.prisma.devolucao.update({
+      where: { id },
+      data: {
+        adminAprovacao: {
+          connect: { id: user.sub },
+        },
+      },
+    });
+
+    return updatedDevolucao;
   }
 }

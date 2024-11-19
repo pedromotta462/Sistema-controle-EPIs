@@ -22,6 +22,9 @@ import {
     People,
     BarChart,
     ArrowRight,
+    Verified,
+    Security,
+    AssignmentReturn,
   } from "@mui/icons-material";
   import HomeIcon from "@mui/icons-material/Home";
   import Cookies from "js-cookie";
@@ -109,7 +112,7 @@ import useStore from "../hooks/useStore";
                   <p className="text-white">Estoque</p>
                 </Stack>
               </ListItemButton>
-              {isAdmin &&
+              {isAdmin && <>
                 <ListItemButton
                   selected={selectedIndex === 3}
                   onClick={(event) => {
@@ -122,10 +125,49 @@ import useStore from "../hooks/useStore";
                     <p className="text-white">Funcionários</p>
                   </Stack>
                 </ListItemButton>
+                <ListItemButton
+                  selected={selectedIndex === 4}
+                  onClick={(event) => {
+                    handleListItemClick(event, 4);
+                    navigate("/app/approvement");
+                  }}
+                >
+                  <Stack flexDirection={"row"} gap={2}>
+                    <Verified color="primary" />
+                    <p className="text-white">Aprovações</p>
+                  </Stack>
+                </ListItemButton>
+                <ListItemButton
+                  selected={selectedIndex === 5}
+                  onClick={(event) => {
+                    handleListItemClick(event, 5);
+                    navigate("/app/devolution");
+                  }}
+                >
+                  <Stack flexDirection={"row"} gap={2}>
+                    <AssignmentReturn color="primary" />
+                    <p className="text-white">Devoluções</p>
+                  </Stack>
+                </ListItemButton>
+                </>
+              }
+              {!isAdmin &&
+                <ListItemButton
+                  selected={selectedIndex === 6}
+                  onClick={(event) => {
+                    handleListItemClick(event, 6);
+                    navigate("/app/my-epis");
+                  }}
+                >
+                  <Stack flexDirection={"row"} gap={2}>
+                    <Security color="primary" />
+                    <p className="text-white">Meus EPIs</p>
+                  </Stack>
+                </ListItemButton>
               }
               <ListItemButton
-                selected={selectedIndex === 4}
-                onClick={(event) => handleListItemClick(event, 4)}
+                selected={selectedIndex === 7}
+                onClick={(event) => handleListItemClick(event, 7)}
               >
                 <Stack flexDirection={"row"} gap={2}>
                   <BarChart color="primary" />

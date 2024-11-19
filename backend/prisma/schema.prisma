@@ -27,8 +27,10 @@ model Funcionario {
 
 model EPI {
   id                String           @id @default(cuid())
-  descricao         String
-  categoria         String
+  nome              String
+  descricao         String?
+  categoria         String?
+  fotoUrl           String?
   quantidadeDisponivel Int
   dataValidade      DateTime?
   retiradas         Retirada[]
@@ -43,17 +45,17 @@ model Retirada {
   epiId             String
   epi               EPI              @relation(fields: [epiId], references: [id])
   devolucao         Devolucao?
-  adminAprovacaoId  String
-  adminAprovacao    Admin            @relation(fields: [adminAprovacaoId], references: [id])
+  adminAprovacaoId  String?
+  adminAprovacao    Admin?            @relation(fields: [adminAprovacaoId], references: [id])
 }
 
 model Devolucao {
   id                String           @id @default(cuid())
-  dataDevolucao     DateTime
+  dataDevolucao     DateTime         @default(now())
   retiradaId        String           @unique
   retirada          Retirada         @relation(fields: [retiradaId], references: [id])
-  adminAprovacaoId  String
-  adminAprovacao    Admin            @relation(fields: [adminAprovacaoId], references: [id])
+  adminAprovacaoId  String?
+  adminAprovacao    Admin?            @relation(fields: [adminAprovacaoId], references: [id])
 }
 
 model Notificacao {

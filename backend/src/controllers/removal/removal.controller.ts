@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { Retirada } from '@prisma/client';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Prisma, Retirada } from '@prisma/client';
 import { RemovalService } from '../../services/removal/removal.service';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('removal')
 export class RemovalController {
@@ -21,9 +22,19 @@ export class RemovalController {
     return this.retiradaService.findOne(id);
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() data: Retirada) {
+  update(@Param('id') id: string, @Body() data: Prisma.RetiradaUpdateInput) {
+
     return this.retiradaService.update(id, data);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('/approve/:id')
+  async approveRemoval(@Param('id') id: string, @Request() req) {
+    const user = req.user;
+
+    return this.retiradaService.approveRemoval(user, id);
   }
 
   @Delete(':id')

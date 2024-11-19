@@ -8,6 +8,9 @@ import {
   Profile,
 } from "../screens/index";
 import ProtectedRoute from "./ProtectedRoute";
+import Approvement from "../screens/Approvement";
+import MyEPIs from "../screens/MyEPIs";
+import Devolution from "../screens/Devolution";
 
 const Router = () => {
   const router = createBrowserRouter([
@@ -39,6 +42,18 @@ const Router = () => {
           path: "profile",
           element: <Profile />,
         },
+        {
+          path: "approvement",
+          element: <Approvement />,
+        },
+        {
+          path: "devolution",
+          element: <Devolution />,
+        },
+        {
+          path: "my-epis",
+          element: <MyEPIs />,
+        }
       ],
     },
   ]);
