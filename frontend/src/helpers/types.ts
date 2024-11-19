@@ -3,6 +3,7 @@ export type Employee = {
   nome: string;
   email: string;
   //senha: string;
+  profilePicture?: string;
   cargo: string;
   dataContratacao: Date;
   retiradas: Retirada[];

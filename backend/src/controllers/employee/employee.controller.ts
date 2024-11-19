@@ -28,7 +28,7 @@ export class EmployeeController {
   ) {
     const where: Prisma.FuncionarioWhereUniqueInput = { id };
 
-    return this.funcionarioService.update(where, data);
+    return this.funcionarioService.update({where, data});
   }
 
   @Delete(':id')

@@ -13,13 +13,10 @@ import {
   } from "@mui/material";
   import { blueGrey } from "@mui/material/colors";
   import React from "react";
-  import avatar from "../assets/placeholder.svg";
   import Logo from "../assets/Logo.png";
   import {
-    Settings,
     Notifications,
     Mail,
-    CalendarToday,
     Menu as MenuIcon,
     FlashOn,
     People,
@@ -69,6 +66,8 @@ import useStore from "../hooks/useStore";
       navigate("/");
       toast.success("Até mais! 👋🏾👋🏾");
     }
+
+    const isAdmin = user.cargo ? false : true;
   
     return (
       <div className="flex items-start justify-start h-[100dvh] w-full bg-[#161717]">
@@ -110,18 +109,20 @@ import useStore from "../hooks/useStore";
                   <p className="text-white">Estoque</p>
                 </Stack>
               </ListItemButton>
-              <ListItemButton
-                selected={selectedIndex === 3}
-                onClick={(event) => {
-                  handleListItemClick(event, 3);
-                  navigate("/app/funcionarios");
-                }}
-              >
-                <Stack flexDirection={"row"} gap={2}>
-                  <People color="primary" />
-                  <p className="text-white">Funcionários</p>
-                </Stack>
-              </ListItemButton>
+              {isAdmin &&
+                <ListItemButton
+                  selected={selectedIndex === 3}
+                  onClick={(event) => {
+                    handleListItemClick(event, 3);
+                    navigate("/app/funcionarios");
+                  }}
+                >
+                  <Stack flexDirection={"row"} gap={2}>
+                    <People color="primary" />
+                    <p className="text-white">Funcionários</p>
+                  </Stack>
+                </ListItemButton>
+              }
               <ListItemButton
                 selected={selectedIndex === 4}
                 onClick={(event) => handleListItemClick(event, 4)}
@@ -168,14 +169,6 @@ import useStore from "../hooks/useStore";
                   <Notifications />
                 </Badge>
               </IconButton>
-              <IconButton color="primary">
-                <Badge badgeContent={3} color="secondary">
-                  <CalendarToday />
-                </Badge>
-              </IconButton>
-              <IconButton color="primary">
-                <Settings />
-              </IconButton>
               <IconButton
                 id="basic-button"
                 aria-controls={open ? "basic-menu" : undefined}
@@ -184,7 +177,7 @@ import useStore from "../hooks/useStore";
                 onClick={handleClick}
               >
                 <Avatar sx={{ bgcolor: blueGrey[500] }}>
-                  <img src={avatar} alt="user icon" />
+                  <img src={user.profilePicture} alt="user icon" />
                 </Avatar>
               </IconButton>
               <Stack gap={0.5}>
@@ -213,7 +206,6 @@ import useStore from "../hooks/useStore";
           >
             Profile
           </MenuItem>
-          <MenuItem onClick={handleClose}>My account</MenuItem>
           <MenuItem
             onClick={() => {
               handleClose;

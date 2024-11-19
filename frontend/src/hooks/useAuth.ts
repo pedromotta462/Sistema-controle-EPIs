@@ -20,13 +20,13 @@ const recoveryPassword = async (body: any): AxiosPromise<any> => {
 
     return response.data;
 };
+*/
 
 const resetPassword = async (body: any): AxiosPromise<any> => {
-    const response = await api.patch(`/user/${body.id}`, body.data);
+    const response = await api.patch(`/employee/${body.id}`, body.data);
 
     return response.data;
 }
-*/
 
 export const useAuthLoginAdmin = (rest: any): any => {
     const mutate = useMutation({
@@ -56,6 +56,8 @@ export const useRecoveryPassword = (rest: any): any => {
 
     return mutate;
 }
+    
+*/
 
 export const useResetPassword = (rest: any): any => {
     const mutate = useMutation({
@@ -65,4 +67,3 @@ export const useResetPassword = (rest: any): any => {
 
     return mutate;
 }
-*/

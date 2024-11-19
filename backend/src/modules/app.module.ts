@@ -9,6 +9,8 @@ import { DevolutionModule } from './devolution/devolution.module';
 import { NotificationModule } from './notification/notification.module';
 import { AdminModule } from './admin/admin.module';
 import { AuthModule } from 'src/controllers/auth/auth.module';
+import { MailerModule } from 'src/controllers/mailer/mailer.module';
+import { ImageUploaderModule } from 'src/controllers/image-uploader/image-uploader.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { AuthModule } from 'src/controllers/auth/auth.module';
     NotificationModule,
     AdminModule,
     AuthModule,
+    MailerModule,
+    ImageUploaderModule,
   ],
   controllers: [
     AppController,

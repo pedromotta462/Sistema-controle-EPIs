@@ -22,7 +22,7 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
         
-        const payload = { sub: user.id, username: user.nome, role: user.cargo };
+        const payload = { sub: user.id, username: user.nome, email: user.email , role: user.cargo };
 
         delete user.senha;
 

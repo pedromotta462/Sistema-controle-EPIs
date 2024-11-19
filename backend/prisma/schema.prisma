@@ -19,6 +19,7 @@ model Funcionario {
   email             String           @unique
   senha             String
   cargo             String
+  profilePicture    String?
   dataContratacao   DateTime         @default(now())
   retiradas         Retirada[]
   notificacoes      Notificacao[]
@@ -59,7 +60,7 @@ model Notificacao {
   id                String           @id @default(cuid())
   tipo              String
   mensagem          String
-  dataEnvio         DateTime
+  dataEnvio         DateTime         @default(now())
   funcionarioId     String
   funcionario       Funcionario      @relation(fields: [funcionarioId], references: [id])
 }
@@ -69,6 +70,7 @@ model Admin {
   nome              String
   email             String           @unique
   senha             String
+  profilePicture    String?
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
   aprovacoesRetirada Retirada[]

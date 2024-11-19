@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Admin, Prisma } from '@prisma/client';
 import * as argon2 from 'argon2';
@@ -8,7 +8,7 @@ export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: Prisma.AdminCreateInput): Promise<Admin> {
-    if (!data.senha) throw new Error('Senha é obrigatório');
+    if (!data.senha) throw new HttpException('Senha é obrigatório', 400);
 
     data.senha = await argon2.hash(data.senha);
 
