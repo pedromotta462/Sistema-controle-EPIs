@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AdminService } from 'src/services/admin/admin.service';
-import { EmployeeService } from 'src/services/employee/employee.service';
+import { AdminService } from '../../services/admin/admin.service';
+import { EmployeeService } from '../../services/employee/employee.service';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { Admin, Funcionario } from '@prisma/client';

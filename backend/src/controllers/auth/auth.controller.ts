@@ -1,7 +1,7 @@
 import { Body, Controller, Post, HttpCode, HttpStatus, Request, UseGuards, Get, Delete } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AdminService } from 'src/services/admin/admin.service';
-import { EmployeeService } from 'src/services/employee/employee.service';
+import { AdminService } from '../../services/admin/admin.service';
+import { EmployeeService } from '../../services/employee/employee.service';
 import { Prisma } from '@prisma/client';
 
 @Controller('auth')

@@ -69,6 +69,14 @@ export class EpiService {
         },
       });
 
+      await this.prisma.notificacao.create({
+        data: {
+          tipo: 'INFO',
+          mensagem: `Solicitação de EPI ${epi.nome} retirado por ${user.username}`,
+          funcionario: { connect: { id: user.sub } },
+        },
+      });
+
       return await this.prisma.retirada.create({
         data: retirada, 
       });

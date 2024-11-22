@@ -2,8 +2,8 @@ import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Funcionario, Prisma } from '@prisma/client';
 import * as argon2 from 'argon2';
-import { MailerService } from 'src/controllers/mailer/mailer.service';
-import { registerEmployeeTemplate } from 'src/controllers/mailer/constants';
+import { MailerService } from '../../controllers/mailer/mailer.service';
+import { registerEmployeeTemplate } from '../../controllers/mailer/constants';
 
 @Injectable()
 export class EmployeeService {
@@ -27,7 +27,17 @@ export class EmployeeService {
 
     data.senha = await argon2.hash(data.senha);
 
-    return await this.prisma.funcionario.create({ data });
+    const user_created =  await this.prisma.funcionario.create({ data });
+
+    await this.prisma.notificacao.create({
+      data: {
+        tipo: 'INFO',
+        mensagem: `Bem Vindo, funcionário ${user_created.nome}!`,
+        funcionario: { connect: { id: user_created.id } }
+      }
+    })
+
+    return user_created;
   }
 
   async findAll(): Promise<Funcionario[]> {
