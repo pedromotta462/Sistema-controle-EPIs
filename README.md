@@ -10,14 +10,18 @@ erDiagram
         String id PK
         String nome
         String email
+        String senha
         String cargo
+        String profilePicture
         DateTime dataContratacao
     }
 
     EPI {
         String id PK
+        String nome
         String descricao
         String categoria
+        String fotoUrl
         Int quantidadeDisponivel
         DateTime dataValidade
     }
@@ -51,6 +55,7 @@ erDiagram
         String nome
         String email
         String senha
+        String profilePicture
         DateTime createdAt
         DateTime updatedAt
     }
