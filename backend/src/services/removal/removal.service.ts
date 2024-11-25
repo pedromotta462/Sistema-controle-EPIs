@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, Retirada } from '@prisma/client';
 
@@ -24,7 +24,15 @@ export class RemovalService {
   }
 
   async findOne(id: string): Promise<Retirada> {
-    const retirada = await this.prisma.retirada.findUnique({ where: { id } });
+    const retirada = await this.prisma.retirada.findUnique({ 
+      where: { id }, 
+      include: {
+        funcionario: true,
+        epi: true,
+        adminAprovacao: true,
+        devolucao: true,
+      },
+    });
     if (!retirada) {
       throw new NotFoundException(`Retirada with ID "${id}" not found`);
     }
@@ -51,7 +59,34 @@ export class RemovalService {
   }
 
   async approveRemoval(user: {sub: string, username: string, email: string }, id: string): Promise<Retirada> {
-    const updatedRetirada = await this.prisma.retirada.update({
+
+    const retirada = await this.prisma.retirada.findUnique({ 
+      where: { id }, 
+      include: {
+        epi: true,
+      },
+    });
+
+    if (retirada.epi.quantidadeDisponivel === 0) {
+      throw new NotAcceptableException(`EPI com ID "${retirada.epiId}" está sem stock`);
+    }
+
+    const epi = await this.prisma.ePI.update({
+      where: { id },
+      data: {
+        quantidadeDisponivel: { decrement: 1 },
+      },
+    });
+
+    const notificacao = {
+      tipo: "Retirada",
+      mensagem: `A retirada do EPI ${retirada.epi.nome} foi aprovada`,
+      funcionarioId: retirada.funcionarioId,
+    }
+
+    await this.sendNotificationToUser(notificacao);
+
+    return await this.prisma.retirada.update({
       where: { id },
       data: {
         adminAprovacao: {
@@ -59,7 +94,11 @@ export class RemovalService {
         },
       },
     });
+  }
 
-    return updatedRetirada;
+  private async sendNotificationToUser(notificacao: { tipo: string; mensagem: string; funcionarioId: string; }) {
+    return await this.prisma.notificacao.create({
+      data: notificacao,
+    });
   }
 }

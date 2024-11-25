@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Devolucao, EPI, Funcionario, Retirada } from '@prisma/client';
 
@@ -52,30 +52,23 @@ export class EpiService {
       }
 
       if (epi.quantidadeDisponivel === 0) {
-        throw new Error(`EPI with ID "${id}" is out of stock`);
+        throw new NotAcceptableException(`EPI with ID "${id}" is out of stock`);
       }
 
       const retirada = {
         epiId: id,
-        funcionarioId: user.sub, // Replace with actual user ID
+        funcionarioId: user.sub, 
         dataRetirada: new Date(),
-        dataPrevistaDevolucao: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+        dataPrevistaDevolucao: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 dias de agora
       }
 
-      await this.prisma.ePI.update({
-        where: { id },
-        data: {
-          quantidadeDisponivel: epi.quantidadeDisponivel - 1,
-        },
-      });
+      const notificacao = {
+        tipo: 'Solicitação',
+        mensagem: `Solicitação de EPI ${epi.nome} retirado por ${user.username}`,
+        funcionarioId: user.sub,
+      }
 
-      await this.prisma.notificacao.create({
-        data: {
-          tipo: 'INFO',
-          mensagem: `Solicitação de EPI ${epi.nome} retirado por ${user.username}`,
-          funcionario: { connect: { id: user.sub } },
-        },
-      });
+      await this.sendNotificationToUsers(notificacao);
 
       return await this.prisma.retirada.create({
         data: retirada, 
@@ -84,12 +77,41 @@ export class EpiService {
     });
   }
 
+
+  private async sendNotificationToUsers(notificacao: { tipo: string; mensagem: string; funcionarioId: string; }) {
+    
+    await this.prisma.notificacao.create({
+      data: notificacao,
+    });
+
+    delete notificacao.funcionarioId;
+
+    const admins = this.prisma.admin.findMany();
+
+    admins.then((admins) => {
+      admins.forEach((admin) => {
+        this.prisma.notificacao.create({
+          data: {
+            tipo: notificacao.tipo,
+            mensagem: notificacao.mensagem,
+            admin: { connect: { id: admin.id } },
+          },
+        });
+      });
+    });
+
+    return "Notificações enviadas";
+  }
+
   async devolutionOne(user: {sub: string, username: string, email: string , role: string}, id: string): Promise<Devolucao> {
     return this.prisma.$transaction(async (prisma) => {
 
       const retirada = await prisma.retirada.findFirst({
         where: {
           id: id,
+        },
+        include: {
+          epi: true,
         },
       });
 
@@ -102,14 +124,13 @@ export class EpiService {
         dataDevolucao: new Date(),
       };
 
-      await this.prisma.ePI.update({
-        where: { id: retirada.epiId },
-        data: {
-          quantidadeDisponivel: {
-            increment: 1,
-          },
-        },
-      });
+      const notificacao = {
+        tipo: 'Devolução',
+        mensagem: `Devolução de EPI: ${retirada.epi.nome} devolvido por ${user.username}`,
+        funcionarioId: user.sub,
+      };
+
+      await this.sendNotificationToUsers(notificacao);
 
       return await this.prisma.devolucao.create({
         data: devolucao,

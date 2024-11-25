@@ -22,6 +22,7 @@ export class EpiController {
     return this.epiService.findOne(id);
   }
 
+  //solicita um epi
   @UseGuards(AuthGuard)
   @Get('/request/:id')
   requestOne(@Request() req, @Param('id') id: string) {
@@ -30,12 +31,11 @@ export class EpiController {
     return this.epiService.requestOne(user, id);
   }
 
+  //devolve um epi
   @UseGuards(AuthGuard)
   @Get('/devolution/:id')
   devolutionOne(@Request() req, @Param('id') id: string) {
     const user = req.user;
-
-    console.log(user);
 
     return this.epiService.devolutionOne(user, id);
   }
