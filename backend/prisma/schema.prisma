@@ -14,67 +14,67 @@ datasource db {
 }
 
 model Funcionario {
-  id                String           @id @default(cuid())
-  nome              String
-  email             String           @unique
-  senha             String
-  cargo             String
-  profilePicture    String?
-  dataContratacao   DateTime         @default(now())
-  retiradas         Retirada[]
-  notificacoes      Notificacao[]
+  id              String        @id @default(cuid())
+  nome            String
+  email           String        @unique
+  senha           String
+  cargo           String
+  profilePicture  String?
+  dataContratacao DateTime      @default(now())
+  retiradas       Retirada[]
+  notificacoes    Notificacao[]
 }
 
 model EPI {
-  id                String           @id @default(cuid())
-  nome              String
-  descricao         String?
-  categoria         String?
-  fotoUrl           String?
+  id                   String     @id @default(cuid())
+  nome                 String
+  descricao            String?
+  categoria            String?
+  fotoUrl              String?
   quantidadeDisponivel Int
-  dataValidade      DateTime?
-  retiradas         Retirada[]
+  dataValidade         DateTime?
+  retiradas            Retirada[]
 }
 
 model Retirada {
-  id                String           @id @default(cuid())
-  dataRetirada      DateTime
+  id                    String      @id @default(cuid())
+  dataRetirada          DateTime
   dataPrevistaDevolucao DateTime?
-  funcionarioId     String
-  funcionario       Funcionario      @relation(fields: [funcionarioId], references: [id])
-  epiId             String
-  epi               EPI              @relation(fields: [epiId], references: [id])
-  devolucao         Devolucao?
-  adminAprovacaoId  String?
-  adminAprovacao    Admin?            @relation(fields: [adminAprovacaoId], references: [id])
+  funcionarioId         String
+  funcionario           Funcionario @relation(fields: [funcionarioId], references: [id])
+  epiId                 String
+  epi                   EPI         @relation(fields: [epiId], references: [id])
+  devolucao             Devolucao?  
+  adminAprovacaoId      String?
+  adminAprovacao        Admin?      @relation(fields: [adminAprovacaoId], references: [id])
 }
 
 model Devolucao {
-  id                String           @id @default(cuid())
-  dataDevolucao     DateTime         @default(now())
-  retiradaId        String           @unique
-  retirada          Retirada         @relation(fields: [retiradaId], references: [id])
-  adminAprovacaoId  String?
-  adminAprovacao    Admin?            @relation(fields: [adminAprovacaoId], references: [id])
+  id               String   @id @default(cuid())
+  dataDevolucao    DateTime @default(now())
+  retiradaId       String   @unique
+  retirada         Retirada @relation(fields: [retiradaId], references: [id])
+  adminAprovacaoId String?
+  adminAprovacao   Admin?   @relation(fields: [adminAprovacaoId], references: [id])
 }
 
 model Notificacao {
-  id                String           @id @default(cuid())
-  tipo              String
-  mensagem          String
-  dataEnvio         DateTime         @default(now())
-  funcionarioId     String
-  funcionario       Funcionario      @relation(fields: [funcionarioId], references: [id])
+  id            String      @id @default(cuid())
+  tipo          String
+  mensagem      String
+  dataEnvio     DateTime    @default(now())
+  funcionarioId String
+  funcionario   Funcionario @relation(fields: [funcionarioId], references: [id])
 }
 
 model Admin {
-  id                String           @id @default(cuid())
-  nome              String
-  email             String           @unique
-  senha             String
-  profilePicture    String?
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  aprovacoesRetirada Retirada[]
+  id                  String      @id @default(cuid())
+  nome                String
+  email               String      @unique
+  senha               String
+  profilePicture      String?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  aprovacoesRetirada  Retirada[]
   aprovacoesDevolucao Devolucao[]
 }

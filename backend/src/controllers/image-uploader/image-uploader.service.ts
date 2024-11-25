@@ -3,8 +3,8 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { extname } from 'path';
 import { Funcionario } from '@prisma/client';
-import { EmployeeService } from 'src/services/employee/employee.service';
-import { AdminService } from 'src/services/admin/admin.service';
+import { EmployeeService } from '../../services/employee/employee.service';
+import { AdminService } from '../../services/admin/admin.service';
 
 @Injectable()
 export class ImageUploaderService {

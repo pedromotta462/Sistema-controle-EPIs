@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { jwtConstants } from './constants';
-import { EmployeeModule } from 'src/modules/employee/employee.module';
-import { AdminModule } from 'src/modules/admin/admin.module';
+import { EmployeeModule } from '../../modules/employee/employee.module';
+import { AdminModule } from '../../modules/admin/admin.module';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({

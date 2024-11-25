@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Request, UseGuards, NotAcceptableException } from '@nestjs/common';
 import { MailerService } from './mailer.service';
 import { SendMailerDto, SendMailerSupportDto } from './dto/send-mailer.dto';
-import { AuthGuard } from 'src//controllers/auth/auth.guard';
+import { AuthGuard } from '../../controllers/auth/auth.guard';
 import { supportEmailTemplate } from './constants';
 
 @Controller('mailer')

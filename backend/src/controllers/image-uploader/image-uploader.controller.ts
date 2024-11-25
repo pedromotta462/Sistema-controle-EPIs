@@ -1,7 +1,7 @@
 import { BadRequestException, Controller, FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageUploaderService } from './image-uploader.service';
-import { AuthGuard } from 'src/controllers/auth/auth.guard';
+import { AuthGuard } from '../../controllers/auth/auth.guard';
 
 @Controller('image-uploader')
 export class ImageUploaderController {
