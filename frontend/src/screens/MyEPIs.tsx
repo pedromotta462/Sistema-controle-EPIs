@@ -8,11 +8,11 @@ import {
 import { useDevolutionEPI } from "../hooks/useEPIs";
 import { useQuery } from "@tanstack/react-query";
 import { Retirada } from "../helpers/types";
-//import useStore from "../hooks/useStore";
+import useStore from "../hooks/useStore";
 import toast from "react-hot-toast";
 
 const MyEPIs = () => {
-  //const user = useStore((state: any) => state.user);
+  const user = useStore((state: any) => state.user);
   const [filteredRemovals, setFilteredRemovals] = useState<Retirada[]>([]);
 
   const {
@@ -46,7 +46,7 @@ const MyEPIs = () => {
   useEffect(() => {
     setFilteredRemovals(
       removals?.filter((removal: Retirada) => {
-      return removal.adminAprovacaoId && !removal.devolucao
+      return removal.adminAprovacaoId && !removal.devolucao && removal.funcionarioId === user.id;
       })
     );
   }, [removals]);

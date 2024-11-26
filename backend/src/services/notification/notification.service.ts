@@ -42,4 +42,26 @@ export class NotificationService {
     }
     return this.prisma.notificacao.delete({ where: { id } });
   }
+
+  async findByUser(user): Promise<Notificacao[]> {
+    if(user.role){
+      return this.prisma.notificacao.findMany({
+        where: {
+          funcionarioId: user.sub,
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+      });
+    }else {
+      return this.prisma.notificacao.findMany({
+        where: {
+          adminId: user.sub,
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+      });
+    }
+  }
 }

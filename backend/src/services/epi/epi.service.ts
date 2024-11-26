@@ -42,100 +42,74 @@ export class EpiService {
     return this.prisma.ePI.delete({ where: { id } });
   }
 
-  async requestOne(user: {sub: string, username: string, email: string , role: string}, id: string): Promise<Retirada> {
-    return this.prisma.$transaction(async (prisma) => {
-
-      const epi = await prisma.ePI.findUnique({ where: { id } });
-
-      if (!epi) {
-        throw new NotFoundException(`EPI with ID "${id}" not found`);
-      }
-
-      if (epi.quantidadeDisponivel === 0) {
-        throw new NotAcceptableException(`EPI with ID "${id}" is out of stock`);
-      }
-
-      const retirada = {
-        epiId: id,
-        funcionarioId: user.sub, 
-        dataRetirada: new Date(),
-        dataPrevistaDevolucao: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 dias de agora
-      }
-
-      const notificacao = {
-        tipo: 'Solicitação',
-        mensagem: `Solicitação de EPI ${epi.nome} retirado por ${user.username}`,
-        funcionarioId: user.sub,
-      }
-
-      await this.sendNotificationToUsers(notificacao);
-
-      return await this.prisma.retirada.create({
-        data: retirada, 
-      });
-
+  async requestOne(user: { sub: string; username: string; email: string; role: string }, id: string): Promise<Retirada> {
+    const epi = await this.prisma.ePI.findUnique({ where: { id } });
+    if (!epi) throw new NotFoundException(`EPI with ID "${id}" not found`);
+    if (epi.quantidadeDisponivel === 0) throw new NotAcceptableException(`EPI with ID "${id}" is out of stock`);
+  
+    const retiradaData = {
+      epiId: id,
+      funcionarioId: user.sub,
+      dataRetirada: new Date(),
+      dataPrevistaDevolucao: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+    };
+  
+    const notificacao = {
+      tipo: 'Solicitação',
+      mensagem: `Solicitação de EPI ${epi.nome} retirado por ${user.username}`,
+      funcionarioId: user.sub,
+    };
+    this.sendNotificationToUsers(notificacao).catch(console.error); // Handle errors gracefully
+  
+    return await this.prisma.retirada.create({
+      data: retiradaData,
     });
   }
+  
 
 
-  private async sendNotificationToUsers(notificacao: { tipo: string; mensagem: string; funcionarioId: string; }) {
-    
+  private async sendNotificationToUsers(notificacao: { tipo: string; mensagem: string; funcionarioId: string }) {
     await this.prisma.notificacao.create({
       data: notificacao,
     });
-
-    delete notificacao.funcionarioId;
-
-    const admins = this.prisma.admin.findMany();
-
-    admins.then((admins) => {
-      admins.forEach((admin) => {
-        this.prisma.notificacao.create({
-          data: {
-            tipo: notificacao.tipo,
-            mensagem: notificacao.mensagem,
-            admin: { connect: { id: admin.id } },
-          },
-        });
-      });
+  
+    const admins = await this.prisma.admin.findMany();
+    const adminNotifications = admins.map((admin) => ({
+      tipo: notificacao.tipo,
+      mensagem: notificacao.mensagem,
+      adminId: admin.id,
+    }));
+  
+    await this.prisma.notificacao.createMany({
+      data: adminNotifications,
     });
-
-    return "Notificações enviadas";
+  
+    return 'Notificações enviadas';
   }
+  
 
-  async devolutionOne(user: {sub: string, username: string, email: string , role: string}, id: string): Promise<Devolucao> {
-    return this.prisma.$transaction(async (prisma) => {
-
-      const retirada = await prisma.retirada.findFirst({
-        where: {
-          id: id,
-        },
-        include: {
-          epi: true,
-        },
-      });
-
-      if (!retirada) {
-        throw new Error(`Retirada with ID "${id}" not found`);
-      }
-
-      const devolucao = {
-        retiradaId: retirada.id,
-        dataDevolucao: new Date(),
-      };
-
-      const notificacao = {
-        tipo: 'Devolução',
-        mensagem: `Devolução de EPI: ${retirada.epi.nome} devolvido por ${user.username}`,
-        funcionarioId: user.sub,
-      };
-
-      await this.sendNotificationToUsers(notificacao);
-
-      return await this.prisma.devolucao.create({
-        data: devolucao,
-      });
-
+  async devolutionOne(user: { sub: string; username: string; email: string; role: string }, id: string): Promise<Devolucao> {
+    const retirada = await this.prisma.retirada.findFirst({
+      where: { id },
+      include: { epi: true },
     });
+    if (!retirada) throw new NotFoundException(`Retirada with ID "${id}" not found`);
+  
+    const devolucaoData = {
+      retiradaId: retirada.id,
+      dataDevolucao: new Date(),
+    };
+  
+    const notificacao = {
+      tipo: 'Solicitação',
+      mensagem: `Devolução de EPI: ${retirada.epi.nome} devolvido por ${user.username}`,
+      funcionarioId: user.sub,
+    };
+    this.sendNotificationToUsers(notificacao).catch(console.error);
+  
+    return await this.prisma.devolucao.create({
+      data: devolucaoData,
+  });
   }
+  
 }

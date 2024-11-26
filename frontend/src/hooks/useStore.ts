@@ -8,7 +8,14 @@ const useStore = create(
             user: {},
             setUser: (user: any) => set({ user }),
             updateUserData: (data: any) => set((state: { user: any }) => ({ user: { ...state.user, ...data } })),
-            clearUser: () => set({ user: {} }),
+            clearUser: () => {
+                set({ user: {} });
+                set({ notificationsCount: 0 });
+            },
+
+            notificationsCount: 0,
+            setNotificationsCount: (count: number) => set({ notificationsCount: count }),
+            clearNotificationsCount: () => set({ notificationsCount: 0 }),
 
             /*
             // Estado para armazenar os dados da redação corrigida

@@ -16,7 +16,6 @@ import {
   import Logo from "../assets/Logo.png";
   import {
     Notifications,
-    Mail,
     Menu as MenuIcon,
     FlashOn,
     People,
@@ -39,6 +38,8 @@ import useStore from "../hooks/useStore";
     const clearUser = useStore((state: any) => state.clearUser);
 
     const user = useStore((state: any) => state.user);
+
+    const notificationsCount = useStore((state: any) => state.notificationsCount);
 
     const navigate = useNavigate();
   
@@ -201,13 +202,11 @@ import useStore from "../hooks/useStore";
               direction={"row"}
               gap={2}
             >
-              <IconButton color="primary">
-                <Badge badgeContent={4} color="secondary">
-                  <Mail />
-                </Badge>
-              </IconButton>
-              <IconButton color="primary">
-                <Badge badgeContent={2} color="secondary">
+              <IconButton 
+                color="primary"
+                onClick={() => navigate("/app/home")}
+              >
+                <Badge badgeContent={notificationsCount} color="secondary">
                   <Notifications />
                 </Badge>
               </IconButton>

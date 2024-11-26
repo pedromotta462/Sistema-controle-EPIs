@@ -67,12 +67,16 @@ export class RemovalService {
       },
     });
 
+    if (!retirada) {
+      throw new NotFoundException(`Retirada with ID "${id}" not found`);
+    }
+
     if (retirada.epi.quantidadeDisponivel === 0) {
       throw new NotAcceptableException(`EPI com ID "${retirada.epiId}" está sem stock`);
     }
 
-    const epi = await this.prisma.ePI.update({
-      where: { id },
+    await this.prisma.ePI.update({
+      where: { id: retirada.epiId },
       data: {
         quantidadeDisponivel: { decrement: 1 },
       },

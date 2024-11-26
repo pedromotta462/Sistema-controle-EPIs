@@ -1,8 +1,41 @@
-import { FlashOn, AccessTimeFilled  } from "@mui/icons-material";
-import { Avatar, Button, Stack, Typography } from "@mui/material";
+import { FlashOn, AccessTimeFilled } from "@mui/icons-material";
+import { Avatar, Stack, Typography } from "@mui/material";
 import { blue, red } from "@mui/material/colors";
+import { useQuery } from "@tanstack/react-query";
+import { Notificacao } from "../helpers/types";
+import { getAllNotificationRequest } from "../hooks/useNotifications";
+import useStore from "../hooks/useStore";
+import { useEffect } from "react";
 
 const Home = () => {
+  const { data: notifications, isLoading: isGettingNotifications } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: getAllNotificationRequest,
+  });
+
+  const setNotificationsCount = useStore((state: any) => state.setNotificationsCount);
+
+  useEffect(() => {
+    if (notifications) {
+      setNotificationsCount(notifications.length);
+    }
+  }, [notifications, setNotificationsCount]);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const hoje = notifications?.filter((notification: Notificacao) => {
+    const dataEnvio = new Date(notification.dataEnvio);
+    dataEnvio.setHours(0, 0, 0, 0);
+    return dataEnvio.getTime() === today.getTime();
+  });
+
+  const outrosDias = notifications?.filter((notification: Notificacao) => {
+    const dataEnvio = new Date(notification.dataEnvio);
+    dataEnvio.setHours(0, 0, 0, 0);
+    return dataEnvio.getTime() !== today.getTime();
+  });
+
   return (
     <Stack
       spacing={2}
@@ -19,139 +52,65 @@ const Home = () => {
       }}
       padding={4}
     >
+      {isGettingNotifications && <p className="text-white">Carregando...</p>}
       <Typography className="text-white">Hoje</Typography>
-      <div className="flex items-center justify-between w-full h-[10%]">
-        <div className="flex items-center justify-center">
-          <p className="text-[#717579] text-sm mr-2">2 minutos</p>
-          <Avatar sx={{bgcolor: blue[500]}} className="mr-4">
-            <FlashOn />
-          </Avatar>
-          <div className="flex flex-col items-start justify-between">
-            <p className="text-white">Lorem ipsum dolor sit amet.</p>
-            <p className="text-[#717579] text-xs">Lorem ipsum dolor sit amet.</p>
+      {hoje?.length === 0 && (
+        <p className="text-blue-500">Nenhuma notificação para hoje</p>
+      )}
+      {hoje?.map((notification: Notificacao) => (
+        <div
+          key={notification.id}
+          className="flex items-center justify-between w-full h-[10%]"
+        >
+          <div className="flex items-center justify-center">
+            <p className="text-[#717579] text-sm mr-2">
+              {new Date(notification.updatedAt).toLocaleString("pt-BR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
+            <Avatar sx={{ bgcolor: notification.tipo === "Solicitação" ? red[500] : blue[500] }} className="mr-4">
+              {notification.tipo === "Solicitação" ? (
+                <AccessTimeFilled />
+              ) : (
+                <FlashOn />
+              )}
+            </Avatar>
+            <div className="flex flex-col items-start justify-between">
+              <p className="text-white">{notification.tipo}</p>
+              <p className="text-[#717579] text-xs">{notification.mensagem}</p>
+            </div>
           </div>
         </div>
-        <Button variant="outlined" size="large">Abrir</Button>
-      </div>
-      <div className="flex items-center justify-between w-full h-[10%]">
-        <div className="flex items-center justify-center">
-          <p className="text-[#717579] text-sm mr-2">2 minutos</p>
-          <Avatar sx={{bgcolor: red[500]}} className="mr-4">
-            <AccessTimeFilled />
-          </Avatar>
-          <div className="flex flex-col items-start justify-between">
-            <p className="text-white">Lorem ipsum dolor sit amet.</p>
-            <p className="text-[#717579] text-xs">Lorem ipsum dolor sit amet.</p>
-          </div>
-        </div>
-        <Button variant="outlined" size="large">Abrir</Button>
-      </div>
-      <div className="flex items-center justify-between w-full h-[10%]">
-        <div className="flex items-center justify-center">
-          <p className="text-[#717579] text-sm mr-2">2 minutos</p>
-          <Avatar sx={{bgcolor: blue[500]}} className="mr-4">
-            <FlashOn />
-          </Avatar>
-          <div className="flex flex-col items-start justify-between">
-            <p className="text-white">Lorem ipsum dolor sit amet.</p>
-            <p className="text-[#717579] text-xs">Lorem ipsum dolor sit amet.</p>
-          </div>
-        </div>
-        <Button variant="outlined" size="large">Abrir</Button>
-      </div>
-      <div className="flex items-center justify-between w-full h-[10%]">
-        <div className="flex items-center justify-center">
-          <p className="text-[#717579] text-sm mr-2">2 minutos</p>
-          <Avatar sx={{bgcolor: blue[500]}} className="mr-4">
-            <FlashOn />
-          </Avatar>
-          <div className="flex flex-col items-start justify-between">
-            <p className="text-white">Lorem ipsum dolor sit amet.</p>
-            <p className="text-[#717579] text-xs">Lorem ipsum dolor sit amet.</p>
-          </div>
-        </div>
-        <Button variant="outlined" size="large">Abrir</Button>
-      </div>
-      <div className="flex items-center justify-between w-full h-[10%]">
-        <div className="flex items-center justify-center">
-          <p className="text-[#717579] text-sm mr-2">2 minutos</p>
-          <Avatar sx={{bgcolor: blue[500]}} className="mr-4">
-            <FlashOn />
-          </Avatar>
-          <div className="flex flex-col items-start justify-between">
-            <p className="text-white">Lorem ipsum dolor sit amet.</p>
-            <p className="text-[#717579] text-xs">Lorem ipsum dolor sit amet.</p>
-          </div>
-        </div>
-        <Button variant="outlined" size="large">Abrir</Button>
-      </div>
-      <div className="flex items-center justify-between w-full h-[10%]">
-        <div className="flex items-center justify-center">
-          <p className="text-[#717579] text-sm mr-2">2 minutos</p>
-          <Avatar sx={{bgcolor: blue[500]}} className="mr-4">
-            <FlashOn />
-          </Avatar>
-          <div className="flex flex-col items-start justify-between">
-            <p className="text-white">Lorem ipsum dolor sit amet.</p>
-            <p className="text-[#717579] text-xs">Lorem ipsum dolor sit amet.</p>
-          </div>
-        </div>
-        <Button variant="outlined" size="large">Abrir</Button>
-      </div>
-      <Typography className="text-white">Ontem</Typography>
-      <div className="flex items-center justify-between w-full h-[10%]">
-        <div className="flex items-center justify-center">
-          <p className="text-[#717579] text-sm mr-2">2 minutos</p>
-          <Avatar sx={{bgcolor: blue[500]}} className="mr-4">
-            <FlashOn />
-          </Avatar>
-          <div className="flex flex-col items-start justify-between">
-            <p className="text-white">Lorem ipsum dolor sit amet.</p>
-            <p className="text-[#717579] text-xs">Lorem ipsum dolor sit amet.</p>
-          </div>
-        </div>
-        <Button variant="outlined" size="large">Abrir</Button>
-      </div>
-      <div className="flex items-center justify-between w-full h-[10%]">
-        <div className="flex items-center justify-center">
-          <p className="text-[#717579] text-sm mr-2">2 minutos</p>
-          <Avatar sx={{bgcolor: red[500]}} className="mr-4">
-            <AccessTimeFilled />
-          </Avatar>
-          <div className="flex flex-col items-start justify-between">
-            <p className="text-white">Lorem ipsum dolor sit amet.</p>
-            <p className="text-[#717579] text-xs">Lorem ipsum dolor sit amet.</p>
-          </div>
-        </div>
-        <Button variant="outlined" size="large">Abrir</Button>
-      </div>
+      ))}
 
-      <div className="flex items-center justify-between w-full h-[10%]">
-        <div className="flex items-center justify-center">
-          <p className="text-[#717579] text-sm mr-2">2 minutos</p>
-          <Avatar sx={{bgcolor: red[500]}} className="mr-4">
-            <AccessTimeFilled />
-          </Avatar>
-          <div className="flex flex-col items-start justify-between">
-            <p className="text-white">Lorem ipsum dolor sit amet.</p>
-            <p className="text-[#717579] text-xs">Lorem ipsum dolor sit amet.</p>
+      <Typography className="text-white">Outro dia</Typography>
+      {outrosDias?.length === 0 && (
+        <p className="text-blue-500">Nenhuma notificação para mostrar</p>
+      )}
+      {outrosDias?.map((notification: Notificacao) => (
+        <div
+          key={notification.id}
+          className="flex items-center justify-between w-full h-[10%]"
+        >
+          <div className="flex items-center justify-center">
+            <p className="text-[#717579] text-sm mr-2">
+              {new Date(notification.updatedAt).toLocaleDateString("pt-BR")}
+            </p>
+            <Avatar sx={{ bgcolor: notification.tipo === "Solicitação" ? red[500] : blue[500] }} className="mr-4">
+              {notification.tipo === "Solicitação" ? (
+                <AccessTimeFilled />
+              ) : (
+                <FlashOn />
+              )}
+            </Avatar>
+            <div className="flex flex-col items-start justify-between">
+              <p className="text-white">{notification.tipo}</p>
+              <p className="text-[#717579] text-xs">{notification.mensagem}</p>
+            </div>
           </div>
         </div>
-        <Button variant="outlined" size="large">Abrir</Button>
-      </div>
-      <div className="flex items-center justify-between w-full h-[10%]">
-        <div className="flex items-center justify-center">
-          <p className="text-[#717579] text-sm mr-2">2 minutos</p>
-          <Avatar sx={{bgcolor: red[500]}} className="mr-4">
-            <AccessTimeFilled />
-          </Avatar>
-          <div className="flex flex-col items-start justify-between">
-            <p className="text-white">Lorem ipsum dolor sit amet.</p>
-            <p className="text-[#717579] text-xs">Lorem ipsum dolor sit amet.</p>
-          </div>
-        </div>
-        <Button variant="outlined" size="large">Abrir</Button>
-      </div>
+      ))}
     </Stack>
   );
 };

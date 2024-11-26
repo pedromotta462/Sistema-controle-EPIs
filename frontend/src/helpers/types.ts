@@ -50,6 +50,10 @@ export type Notificacao = {
   dataEnvio: Date;
   funcionarioId: string;
   funcionario: Employee;
+  adminId: string;
+  admin: Admin;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type Admin = {
