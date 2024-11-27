@@ -1,9 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AdminService } from '../../services/admin/admin.service';
 import { EmployeeService } from '../../services/employee/employee.service';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { Admin, Funcionario } from '@prisma/client';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -11,10 +13,14 @@ export class AuthService {
     constructor(
         private adminService: AdminService,
         private employeeService: EmployeeService,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private httpService: HttpService
     ) {}
 
-    async signInEmployee(email: string, pass: string): Promise<{ access_token: string, user: Funcionario }> {
+    async signInEmployee(email: string, pass: string, recaptchaToken: string): Promise<{ access_token: string, user: Funcionario }> {
+
+        await this.validateRecaptcha(recaptchaToken);
+
 
         const user = await this.employeeService.findOne({ email });
 
@@ -33,7 +39,9 @@ export class AuthService {
 
     }
 
-    async signInAdmin(email: string, pass: string): Promise<{ access_token: string, user: Admin }> {
+    async signInAdmin(email: string, pass: string, recaptchaToken: string): Promise<{ access_token: string, user: Admin }> {
+
+        await this.validateRecaptcha(recaptchaToken);
 
         const admin = await this.adminService.findOne({ email });
 
@@ -50,6 +58,22 @@ export class AuthService {
             user: admin,
         };
 
+    }
+
+    private async validateRecaptcha(token: string): Promise<void> {
+        const url = `https://www.google.com/recaptcha/api/siteverify`;
+        const response = await lastValueFrom(
+            this.httpService.post(url, null, {
+                params: {
+                    secret: process.env.RECAPTCHA_SECRET_KEY,
+                    response: token,
+                },
+            }),
+        );
+
+        if (!response.data.success) {
+            throw new BadRequestException('Falha na validação do reCAPTCHA.');
+        }
     }
 
 }

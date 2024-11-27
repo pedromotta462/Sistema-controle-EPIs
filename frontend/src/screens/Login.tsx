@@ -6,24 +6,22 @@ import { Admin, Employee } from "../helpers/types";
 import useStore from "../hooks/useStore";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
+import ReCAPTCHA from "react-google-recaptcha";
 
 function Login() {
   const navigate = useNavigate();
-
   const [showLoginAdmin, setShowLoginAdmin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
   const setUser = useStore((state: any) => state.setUser);
 
   const { mutate: loginAdmin, isPending: isLoginAdmin } = useAuthLoginAdmin({
     onSuccess: (data: { user: Admin; access_token: string }) => {
       Cookies.set("access_token", data.access_token, { expires: 1 });
-
       setUser(data.user);
-
       toast.success("Login efetuado com sucesso!");
-
       navigate("/app/home");
     },
     onError: (error: any) => {
@@ -34,35 +32,43 @@ function Login() {
   });
 
   const { mutate: loginEmployee, isPending: isLoginEmployee } = useAuthLoginEmployee({
-      onSuccess: (data: { user: Employee, access_token: string }) => {
-        Cookies.set("access_token", data.access_token, { expires: 1 });
-
-        setUser(data.user);
-
-        toast.success("Login efetuado com sucesso!");
-
-        navigate("/app/home");
-      },
-      onError: (error: any) => {
-        const errorMessage =
-          error.response?.data?.message || "Erro desconhecido";
-        toast.error("Erro ao efetuar login:\n " + errorMessage);
-        console.log(error);
-      },
-    });
+    onSuccess: (data: { user: Employee; access_token: string }) => {
+      Cookies.set("access_token", data.access_token, { expires: 1 });
+      setUser(data.user);
+      toast.success("Login efetuado com sucesso!");
+      navigate("/app/home");
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error.response?.data?.message || "Erro desconhecido";
+      toast.error("Erro ao efetuar login:\n " + errorMessage);
+      console.log(error);
+    },
+  });
 
   const onClickLogin = () => {
+    if (!recaptchaToken) {
+      toast.error("Por favor, complete o reCAPTCHA.");
+      return;
+    }
+
     if (!showLoginAdmin) {
       loginAdmin({
         email,
         password,
+        recaptchaToken,
       });
     } else {
       loginEmployee({
         email,
         password,
+        recaptchaToken,
       });
     }
+  };
+
+  const onRecaptchaChange = (token: string | null) => {
+    setRecaptchaToken(token);
   };
 
   const onClickHandler = () => {
@@ -96,26 +102,30 @@ function Login() {
             Por favor, insira seus dados.
           </h3>
 
-            <>
-              <TextField
-                required
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-[70%]"
-                label="Email here"
-                margin="dense"
-              />
-              <TextField
-                required
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-[70%]"
-                label="Password here"
-                margin="dense"
-              />
-            </>
+          <TextField
+            required
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-[70%]"
+            label="Email here"
+            margin="dense"
+          />
+          <TextField
+            required
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-[70%]"
+            label="Password here"
+            margin="dense"
+          />
+
+          <ReCAPTCHA
+            sitekey={import.meta.env.VITE_SITE_KEY}
+            onChange={onRecaptchaChange}
+            className="mt-4"
+          />
 
           <Stack spacing={1} className="mt-5">
             <Button

@@ -5,11 +5,13 @@ import { jwtConstants } from './constants';
 import { EmployeeModule } from '../../modules/employee/employee.module';
 import { AdminModule } from '../../modules/admin/admin.module';
 import { JwtModule } from '@nestjs/jwt';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     EmployeeModule,
     AdminModule,
+    HttpModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,

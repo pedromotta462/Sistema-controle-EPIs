@@ -15,13 +15,13 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Post('login/admin')
     signInAdmin(@Body() signInDto: Record<string, any>) {
-        return this.authService.signInAdmin(signInDto.email, signInDto.password);
+        return this.authService.signInAdmin(signInDto.email, signInDto.password, signInDto.recaptchaToken);
     }
 
     @HttpCode(HttpStatus.OK)
     @Post('login/employee')
     signInEmployee(@Body() signInDto: Record<string, any>) {
-        return this.authService.signInEmployee(signInDto.email, signInDto.password);
+        return this.authService.signInEmployee(signInDto.email, signInDto.password, signInDto.recaptchaToken);
     }
 
     //SignUp
