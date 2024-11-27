@@ -72,6 +72,7 @@ export class AuthService {
         );
 
         if (!response.data.success) {
+            console.log(response.data);
             throw new BadRequestException('Falha na validação do reCAPTCHA.');
         }
     }
