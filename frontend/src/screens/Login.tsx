@@ -26,25 +26,25 @@ function Login() {
     },
     onError: (error: any) => {
       const errorMessage = error.response?.data?.message || "Erro desconhecido";
-      toast.error("Erro ao efetuar login:\n " + errorMessage);
+      toast.error("Erro ao efetuar login:\n" + errorMessage);
       console.log(error);
     },
   });
 
-  const { mutate: loginEmployee, isPending: isLoginEmployee } = useAuthLoginEmployee({
-    onSuccess: (data: { user: Employee; access_token: string }) => {
-      Cookies.set("access_token", data.access_token, { expires: 1 });
-      setUser(data.user);
-      toast.success("Login efetuado com sucesso!");
-      navigate("/app/home");
-    },
-    onError: (error: any) => {
-      const errorMessage =
-        error.response?.data?.message || "Erro desconhecido";
-      toast.error("Erro ao efetuar login:\n " + errorMessage);
-      console.log(error);
-    },
-  });
+  const { mutate: loginEmployee, isPending: isLoginEmployee } =
+    useAuthLoginEmployee({
+      onSuccess: (data: { user: Employee; access_token: string }) => {
+        Cookies.set("access_token", data.access_token, { expires: 1 });
+        setUser(data.user);
+        toast.success("Login efetuado com sucesso!");
+        navigate("/app/home");
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || "Erro desconhecido";
+        toast.error("Erro ao efetuar login:\n" + errorMessage);
+        console.log(error);
+      },
+    });
 
   const onClickLogin = () => {
     if (!recaptchaToken) {
@@ -53,17 +53,9 @@ function Login() {
     }
 
     if (!showLoginAdmin) {
-      loginAdmin({
-        email,
-        password,
-        recaptchaToken,
-      });
+      loginAdmin({ email, password, recaptchaToken });
     } else {
-      loginEmployee({
-        email,
-        password,
-        recaptchaToken,
-      });
+      loginEmployee({ email, password, recaptchaToken });
     }
   };
 
@@ -85,21 +77,22 @@ function Login() {
         >
           <img
             src="../assets/react.svg"
-            alt="Imagem da logo do sistema"
-            className={"rounded object-fill"}
-          ></img>
+            alt="Logo do sistema"
+            className="rounded object-fill"
+          />
         </div>
+
         <form
           className={`${
             showLoginAdmin ? "" : "transform -translate-x-full"
           } flex flex-col items-center justify-center w-[50%] h-full transition-all ease-in-out duration-500`}
         >
           <h1 className="text-black font-inter font-normal text-3xl leading-16">
-            Bem vindo ao <br />{" "}
-            <span className="text-yellow-500">Sistema de controle de EPIs</span>
+            Bem-vindo ao <br />
+            <span className="text-yellow-500">Sistema de Controle de EPIs</span>
           </h1>
-          <h3 className="text-[#000000] text-opacity-50 mb-[5%] font-inter font-normal text-.5xl">
-            Por favor, insira seus dados.
+          <h3 className="text-[#000000] text-opacity-50 mb-[5%] font-inter font-normal text-lg">
+            Por favor, insira seus dados abaixo.
           </h3>
 
           <TextField
@@ -108,7 +101,7 @@ function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-[70%]"
-            label="Email here"
+            label="E-mail"
             margin="dense"
           />
           <TextField
@@ -117,7 +110,7 @@ function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-[70%]"
-            label="Password here"
+            label="Senha"
             margin="dense"
           />
 
@@ -130,7 +123,7 @@ function Login() {
           <Stack spacing={1} className="mt-5">
             <Button
               size="large"
-              variant={"contained"}
+              variant="contained"
               onClick={(e) => {
                 e.preventDefault();
                 onClickLogin();
@@ -145,10 +138,10 @@ function Login() {
                 onClickHandler();
               }}
               size={`${showLoginAdmin ? "medium" : "large"}`}
-              variant={"outlined"}
+              variant="outlined"
               className="m-5"
             >
-              {showLoginAdmin ? "Login Admin" : "Login Employee"}
+              {showLoginAdmin ? "Login Administrador" : "Login Funcionário"}
             </Button>
           </Stack>
         </form>

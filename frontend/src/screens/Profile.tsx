@@ -44,16 +44,14 @@ export default function Profile() {
   const { mutate: changePicture, isLoading: isChangingPicture } =
     useChangeProfilePicture({
       onSuccess: async (data: { url: string; fileName: string }) => {
-        toast.success("Foto de perfil alterada com sucesso!");
-
+        toast.success("Foto de perfil atualizada com sucesso!");
         const newProfilePictureUrl = data.url;
         await updateUser({ profilePicture: newProfilePictureUrl });
-
         setProfileImage(data.url);
       },
       onError: (error: any) => {
         const errorMessage = error.response?.data?.message || "";
-        toast.error("Erro ao alterar a foto:\n " + errorMessage);
+        toast.error("Erro ao alterar a foto.\n" + errorMessage);
         console.log(error);
       },
     });
@@ -65,7 +63,7 @@ export default function Profile() {
       },
       onError: (error: any) => {
         const errorMessage = error.response?.data?.message || "";
-        toast.error("Erro ao redefinir a senha:\n " + errorMessage);
+        toast.error("Erro ao redefinir a senha.\n" + errorMessage);
         console.log(error);
       },
     });
@@ -80,11 +78,8 @@ export default function Profile() {
   const handleResetPassword = () => {
     resetPassword({
       id: user.id,
-      data: {
-        senha: newPassword,
-      },
+      data: { senha: newPassword },
     });
-
     setNewPassword("");
     setShowPassword(false);
   };
@@ -95,7 +90,6 @@ export default function Profile() {
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-
     changePicture(file);
   };
 
@@ -103,6 +97,7 @@ export default function Profile() {
     <div className="w-[50%] bg-blue-950 py-5 px-4 sm:px-6 lg:px-8 rounded-xl">
       <div className="max-w-5xl mx-auto bg-gray-200 flex justify-center items-center rounded-lg shadow-md overflow-hidden">
         <div className="md:flex flex-col">
+          {/* Avatar */}
           <div className="md:flex-shrink-0 py-4">
             <div
               className="relative w-52 h-52 cursor-pointer m-auto"
@@ -110,11 +105,11 @@ export default function Profile() {
             >
               <img
                 src={profileImage}
-                alt="Profile"
+                alt="Foto de perfil"
                 className="w-full h-full rounded-full object-cover"
               />
               <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 hover:opacity-100 transition-opacity">
-                <span className="text-white text-sm">Change Photo</span>
+                <span className="text-white text-sm">Alterar foto</span>
               </div>
               <input
                 type="file"
@@ -124,7 +119,7 @@ export default function Profile() {
               />
               {isChangingPicture && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75 rounded-full">
-                  <span className="text-white text-sm">Alterando...</span>
+                  <span className="text-white text-sm">Atualizando...</span>
                 </div>
               )}
             </div>
@@ -136,6 +131,8 @@ export default function Profile() {
               accept="image/*"
             />
           </div>
+
+          {/* Dados do usuário */}
           <div className="p-8 w-full flex flex-col justify-center items-center">
             <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
               Perfil do Usuário
@@ -143,24 +140,27 @@ export default function Profile() {
             <h1 className="mt-2 text-3xl leading-8 font-bold tracking-tight text-gray-900">
               {user.nome}
             </h1>
-            <p className="mt-2 text-gray-500">{user.email}</p>
-            <p className="mt-2 text-gray-500">
-              {user.cargo ? user.cargo : "Admin"}
+            <p className="mt-2 text-gray-600">{user.email}</p>
+            <p className="mt-2 text-gray-600">
+              {user.cargo ? user.cargo : "Administrador"}
             </p>
-            {user.cargo &&
+
+            {user.cargo && (
               <div className="mt-6">
                 <button
                   disabled={isResetingPassword}
                   onClick={handleOpen}
                   className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                  {isResetingPassword ? "Salvando..." : "Alterar Senha"}
+                  {isResetingPassword ? "Salvando..." : "Alterar senha"}
                 </button>
               </div>
-            }
+            )}
           </div>
         </div>
       </div>
+
+      {/* Dialog alterar senha */}
       <Dialog
         TransitionComponent={Transition}
         open={open}
@@ -174,18 +174,18 @@ export default function Profile() {
           },
         }}
       >
-        <DialogTitle>Alterar Senha</DialogTitle>
+        <DialogTitle>Alterar senha</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Por favor, insira sua nova senha.
+            Digite a nova senha desejada abaixo.
           </DialogContentText>
           <TextField
             autoFocus
             required
             margin="dense"
-            id="name"
+            id="password"
             name="password"
-            label="New Password"
+            label="Nova senha"
             type={showPassword ? "text" : "password"}
             fullWidth
             variant="standard"
@@ -195,7 +195,7 @@ export default function Profile() {
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
-                    aria-label="toggle password visibility"
+                    aria-label="mostrar ou ocultar senha"
                     onClick={handleClickShowPassword}
                     edge="end"
                   >
